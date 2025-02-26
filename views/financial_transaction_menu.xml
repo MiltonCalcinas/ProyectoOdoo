@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menú principal Finanzas -->
+    <menuitem id="menu_finanzas_root" name="Finanzas"/>
+
+    <!-- Submenú para Transacciones Financieras -->
+    <menuitem id="menu_financial_transaction" name="Transacciones Financieras"
+              parent="menu_finanzas_root" sequence="10"/>
+
+    <!-- Acción para mostrar las transacciones -->
+    <record id="action_financial_transaction" model="ir.actions.act_window">
+        <field name="name">Transacciones Financieras</field>
+        <field name="res_model">finanzas.financial.transaction</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_financial_transaction_action"
+              parent="menu_financial_transaction"
+              action="action_financial_transaction"
+              sequence="10"/>
+</odoo>

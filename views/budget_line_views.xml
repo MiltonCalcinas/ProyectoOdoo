@@ -1,0 +1,14 @@
+<odoo>
+    <record id="view_budget_line_tree" model="ir.ui.view">
+        <field name="name">finanzas.budget.line.tree</field>
+        <field name="model">finanzas.budget.line</field>
+        <field name="arch" type="xml">
+            <tree string="Líneas de Presupuesto">
+                <field name="budget_id"/>
+                <field name="type"/>
+                <field name="planned_amount"/>
+                <field name="real_amount"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

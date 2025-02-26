@@ -1,0 +1,54 @@
+<odoo>
+    <record id="view_budget_form" model="ir.ui.view">
+        <field name="name">finanzas.budget.form</field>
+        <field name="model">finanzas.budget</field>
+        <field name="arch" type="xml">
+            <form string="Presupuesto">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="department_id"/>
+                        <field name="year"/>
+                        <field name="state"/>
+                    </group>
+                    <notebook>
+                        <page string="Líneas de Presupuesto">
+                            <field name="line_ids" widget="one2many_list">
+                                <tree editable="bottom">
+                                    <field name="type"/>
+                                    <field name="planned_amount"/>
+                                    <field name="real_amount" readonly="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_budget_tree" model="ir.ui.view">
+        <field name="name">finanzas.budget.tree</field>
+        <field name="model">finanzas.budget</field>
+        <field name="arch" type="xml">
+            <tree string="Presupuestos">
+                <field name="name"/>
+                <field name="department_id"/>
+                <field name="year"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <menuitem id="menu_finanzas_root" name="Finanzas" sequence="1"/>
+    
+    <menuitem id="menu_budget" name="Presupuestos" parent="menu_finanzas_root" sequence="2"/>
+    
+    <record id="action_budget" model="ir.actions.act_window">
+        <field name="name">Presupuestos</field>
+        <field name="res_model">finanzas.budget</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_action_budget" name="Gestión de Presupuestos" parent="menu_budget" action="action_budget"/>
+</odoo>

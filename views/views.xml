@@ -1,0 +1,160 @@
+<odoo>
+    <record id="view_form_finanzas" model="ir.ui.view">
+        <field name="name">finanzas.form</field>
+        <field name="model">finanzas.finanzas</field>
+        <field name="arch" type="xml">
+            <form string="Finanzas">
+                <sheet>
+                    <group>
+                        <field name="ingresos"/>
+                        <field name="gastos"/>
+                        <field name="flujo_de_caja" readonly="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Guardar" type="object" name="action_save" class="btn-primary"/>
+                    <button string="Cancelar" type="object" name="action_cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+
+
+
+    <record id="view_form_ingreso" model="ir.ui.view">
+        <field name="name">finanzas.ingreso.form</field>
+        <field name="model">finanzas.ingreso</field>
+        <field name="arch" type="xml">
+            <form string="Ingreso">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="monto"/>
+                        <field name="fecha"/>
+                        <field name="factura_id"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Guardar" type="object" name="action_save" class="btn-primary"/>
+                    <button string="Cancelar" type="object" name="action_cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+
+    <record id="view_form_gasto" model="ir.ui.view">
+        <field name="name">finanzas.gasto.form</field>
+        <field name="model">finanzas.gasto</field>
+        <field name="arch" type="xml">
+            <form string="Gasto">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="monto"/>
+                        <field name="fecha"/>
+                        <field name="proveedor"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Guardar" type="object" name="action_save" class="btn-primary"/>
+                    <button string="Cancelar" type="object" name="action_cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+
+    <record id="view_form_presupuesto" model="ir.ui.view">
+        <field name="name">finanzas.presupuesto.form</field>
+        <field name="model">finanzas.presupuesto</field>
+        <field name="arch" type="xml">
+            <form string="Presupuesto Anual">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="monto_presupuestado"/>
+                        <field name="monto_real" readonly="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Guardar" type="object" name="action_save" class="btn-primary"/>
+                    <button string="Cancelar" type="object" name="action_cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+
+    <record id="view_form_analisis_financiero" model="ir.ui.view">
+        <field name="name">finanzas.analisis.form</field>
+        <field name="model">finanzas.analisis</field>
+        <field name="arch" type="xml">
+            <form string="Análisis Financiero">
+                <sheet>
+                    <group>
+                        <field name="ingresos"/>
+                        <field name="gastos"/>
+                        <field name="predicción_flujo" readonly="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Predecir Flujo" type="object" name="predecir_flujo_caja" class="btn-primary"/>
+                    <button string="Cancelar" type="object" name="action_cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+
+
+
+
+    <record id="view_form_integracion_contable" model="ir.ui.view">
+        <field name="name">finanzas.integracion.form</field>
+        <field name="model">finanzas.integracion</field>
+        <field name="arch" type="xml">
+            <form string="Integración Contable">
+                <sheet>
+                    <group>
+                        <field name="saldo_banco"/>
+                        <field name="cuenta_contable"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Guardar" type="object" name="action_save" class="btn-primary"/>
+                    <button string="Cancelar" type="object" name="action_cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+
+
+    <record id="view_form_reporte" model="ir.ui.view">
+        <field name="name">finanzas.reporte.form</field>
+        <field name="model">finanzas.reporte</field>
+        <field name="arch" type="xml">
+            <form string="Generar Reporte">
+                <sheet>
+                    <group>
+                        <!-- Campos para generar reportes -->
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Generar Reporte" type="object" name="generar_reporte" class="btn-primary"/>
+                    <button string="Cancelar" type="object" name="action_cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+</odoo>
