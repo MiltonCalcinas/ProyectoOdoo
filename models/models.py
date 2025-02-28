@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api # type: ignore
 
+
+
 class Budget(models.Model):
     _name = 'finanzas.budget'
     _description = 'Presupuesto por Departamento'
@@ -14,21 +16,17 @@ class Budget(models.Model):
         ('confirmed', 'Confirmado'),
         ('done', 'Finalizado')
     ], string='Estado', default='draft')
+
     line_ids = fields.One2many('finanzas.budget.line', 'budget_id', string='Líneas de Presupuesto')
-    
-    def action_compare_budget(self):
+
+    @api.onchange('name', 'department_id', 'year')
+    def _onchange_update_real_amount(self):
+        """ Se ejecuta cuando se abre o cambia un presupuesto """
         for budget in self:
             for line in budget.line_ids:
-                total_real = sum(budget.env['finanzas.financial.transaction'].search([
-                    ('department_id', '=', budget.department_id.id),
-                    ('type', '=', line.type),
-                    ('date', '>=', '%s-01-01' % budget.year),
-                    ('date', '<=', '%s-12-31' % budget.year)
-                ]).mapped('amount'))
-                line.real_amount = total_real
+                line._compute_real_amount()
+             
 
-
-                
 
 
 class BudgetLine(models.Model):
@@ -41,24 +39,27 @@ class BudgetLine(models.Model):
         ('expense', 'Gasto')
     ], string='Tipo', required=True)
     planned_amount = fields.Float(string='Monto Planeado', required=True)
-    real_amount = fields.Float(string='Monto Real', compute='_compute_real_amount', store=True)
     
-    @api.depends('budget_id')
+    real_amount = fields.Float(string='Monto Real', compute='_compute_real_amount', store=True)
+
+    @api.depends('budget_id', 'budget_id.department_id', 'budget_id.year', 'type')
     def _compute_real_amount(self):
         for line in self:
-            transactions = self.env['finanzas.financial.transaction'].search([
-                ('department_id', '=', line.budget_id.department_id.id),
-                ('type', '=', line.type),
-                ('date', '>=', '%s-01-01' % line.budget_id.year),
-                ('date', '<=', '%s-12-31' % line.budget_id.year)
-            ])
-            line.real_amount = sum(transactions.mapped('amount'))
+            if line.budget_id:
+                transactions = self.env['finanzas.financial.transaction'].search([
+                    ('department_id', '=', line.budget_id.department_id.id),
+                    ('type', '=', line.type),
+                    ('date', '>=', '%s-01-01' % line.budget_id.year),
+                    ('date', '<=', '%s-12-31' % line.budget_id.year)
+                ])
+                line.real_amount = sum(transactions.mapped('amount'))
+
 
 
 class FinancialTransaction(models.Model):
     _name = 'finanzas.financial.transaction'
     _description = 'Transacción Financiera Real'
-    
+
     name = fields.Char(string='Descripción', required=True)
     department_id = fields.Many2one('hr.department', string='Departamento', required=True)
     date = fields.Date(string='Fecha', required=True)
@@ -67,6 +68,35 @@ class FinancialTransaction(models.Model):
         ('expense', 'Gasto')
     ], string='Tipo', required=True)
     amount = fields.Float(string='Monto', required=True)
+
+    @api.model
+    def create(self, vals):
+        """ Al crear una nueva transacción, actualiza automáticamente el presupuesto correspondiente. """
+        transaction = super(FinancialTransaction, self).create(vals)
+        transaction.update_budget_real_amount()
+        return transaction
+
+    def write(self, vals):
+        """ Al modificar una transacción existente, actualiza el presupuesto correspondiente. """
+        result = super(FinancialTransaction, self).write(vals)
+        self.update_budget_real_amount()
+        return result
+
+    def unlink(self):
+        """ Al eliminar una transacción, actualiza el presupuesto correspondiente. """
+        self.update_budget_real_amount()
+        return super(FinancialTransaction, self).unlink()
+
+    def update_budget_real_amount(self):
+        """ Encuentra el presupuesto correspondiente y actualiza el monto real. """
+        for transaction in self:
+            budget_lines = self.env['finanzas.budget.line'].search([
+                ('budget_id.department_id', '=', transaction.department_id.id),
+                ('budget_id.year', '=', transaction.date.year),
+                ('type', '=', transaction.type)
+            ])
+            budget_lines._compute_real_amount()
+
 
 
 
