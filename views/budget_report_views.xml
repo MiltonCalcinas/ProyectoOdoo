@@ -31,11 +31,11 @@
         <field name="name">finanzas.budget.report.tree</field>
         <field name="model">finanzas.budget.report</field>
         <field name="arch" type="xml">
-            <list string="Reportes">
+            <tree string="Reportes">
                 <field name="name"/>
                 <field name="department_id"/>
                 <field name="year"/>
-            </list>
+            </tree>
         </field>
     </record>
 
