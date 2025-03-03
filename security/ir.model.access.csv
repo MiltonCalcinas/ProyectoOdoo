@@ -2,4 +2,5 @@ id,name,model_id:id,group_id,perm_read,perm_write,perm_create,perm_unlink
 access_finanzas_budget,access.finanzas.budget,model_finanzas_budget,,1,1,1,1
 access_finanzas_budget_line,access.finanzas.budget.line,model_finanzas_budget_line,,1,1,1,1
 access_finanzas_transaction,access.finanzas.financial.transaction,model_finanzas_financial_transaction,,1,1,1,1
+access_finanzas_budget_report,access.finanzas.budget.report,model_finanzas_budget_report,,1,1,1,1
 

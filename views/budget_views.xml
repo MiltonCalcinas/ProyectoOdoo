@@ -56,6 +56,6 @@
         <field name="res_model">finanzas.budget</field>
         <field name="view_mode">tree,form</field>
     </record>
-    <!-- Se añade item de Prepuesto(parent). Se asocia el item a la accion (action_bugeg)-->
+    <!-- Se añade item de Prepuesto(). Se asocia el item a la accion (action_bugeg)-->
     <menuitem id="menu_action_budget" name="Gestión de Presupuestos" parent="menu_budget" action="action_budget"/>
 </odoo>

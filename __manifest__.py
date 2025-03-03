@@ -34,6 +34,7 @@
     'data': [
         'security/ir.model.access.csv',  # Se asegura que la seguridad esté cargada
         'views/budget_views.xml',  # Nueva vista para el modelo Budget
+        'views/budget_report_views.xml', # Graficos y tablas
         'views/budget_line_views.xml',  # Nueva vista para BudgetLine
         'views/financial_transaction_views.xml',  # Nueva vista para transacciones financieras
          'views/financial_transaction_menu.xml', # 

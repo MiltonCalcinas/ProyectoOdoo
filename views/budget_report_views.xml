@@ -1,0 +1,57 @@
+<odoo>
+    <record id="view_budget_report_form" model="ir.ui.view">
+        <field name="name">finanzas.budget.report.form</field>
+        <field name="model">finanzas.budget.report</field>
+        <field name="arch" type="xml">
+            <form string="Reporte de Presupuesto">
+                <sheet>
+                    <group>
+                        <field name="department_id"/>
+                        <field name="year"/>
+                    </group>
+                    <group>
+                        <field name="income_total" readonly="1"/>
+                        <field name="expense_total" readonly="1"/>
+                        <field name="balance" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="income_real" readonly="1"/>
+                        <field name="expense_real" readonly="1"/>
+                        <field name="balance_real" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Gráficos">
+                            <div class="oe_charts" options="{'data': {'type': 'bar', 'columns': [['Ingresos Planeados', income_total], ['Gastos Planeados', expense_total], ['Ingresos Reales', income_real], ['Gastos Reales', expense_real]]}}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+
+        <!-- Menú principal Finanzas -->
+    <menuitem id="menu_finanzas_root" name="Finanzas" sequence="1"/>
+        
+        <!-- Submenu -->
+    <menuitem id="menu_financial_report" name="Reportes Financieros"
+              parent="menu_finanzas_root" sequence="2"/>
+
+
+    <!-- Acción del Reporte -->
+    <record id="action_budget_report" model="ir.actions.act_window">
+        <field name="name">Reporte de Presupuesto</field>
+        <field name="res_model">finanzas.budget.report</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_budget_report_form"/>
+    </record>
+
+    
+    <!-- Ajuste: Crear un menú principal para "Presupuestos" y colocar el reporte en el mismo nivel -->
+    
+    <menuitem id="menu_reporte_action"
+            parent="menu_financial_report"
+            action="action_budget_report"
+            sequence="2"/>
+</odoo>

@@ -109,99 +109,46 @@ class FinancialTransaction(models.Model):
 
 
 
+# store= True , en un campo calculado, el valor se guarda despues de ser calculado
+# @api.depends('department_id','years') siginfica que el meétodo que esté debajo se ejecuta automáticamente cuando
+# se modifica cualquiera de los dos campos indicados.
+# self.env  propociona acceso al entorno de odoo como registro de otros modelos y recusos del sistema
+class BudgetReport(models.Model):
+    _name = 'finanzas.budget.report'
+    _description = 'Reporte de Presupuesto y Transacciones'
 
+    department_id = fields.Many2one('hr.department', string='Departamento', required=True)
+    year = fields.Integer(string='Año', required=True)
+    income_total = fields.Float(string='Total Ingresos', compute='_compute_totals', store=True)
+    expense_total = fields.Float(string='Total Gastos', compute='_compute_totals', store=True)
+    balance = fields.Float(string='Balance', compute='_compute_totals', store=True)
+    income_real = fields.Float(string='Ingresos Reales', compute='_compute_totals', store=True)
+    expense_real = fields.Float(string='Gastos Reales', compute='_compute_totals', store=True)
+    balance_real = fields.Float(string='Balance Real', compute='_compute_totals', store=True)
 
-    
-
-"""
-
-# -*- coding: utf-8 -*-  
-# Importamos las clases necesarias de Odoo
-from odoo import models, fields, api
-
-# Definimos el modelo Budget (Presupuesto)
-class Budget(models.Model):
-    _name = 'finanzas.budget'  # Nombre técnico del modelo en Odoo
-    _description = 'Presupuesto por Departamento'  # Descripción del modelo
-    
-    # Campos del modelo
-    name = fields.Char(string='Nombre del Presupuesto', required=True)  # Nombre del presupuesto (obligatorio)
-    department_id = fields.Many2one('hr.department', string='Departamento', required=True)  # Relación con un departamento (Many2one)
-    year = fields.Integer(string='Año', required=True)  # Año del presupuesto (obligatorio)
-    
-    # Estado del presupuesto con selección de valores predefinidos
-    state = fields.Selection([
-        ('draft', 'Borrador'),  # Estado inicial
-        ('confirmed', 'Confirmado'),  # Estado cuando se confirma
-        ('done', 'Finalizado')  # Estado cuando se finaliza
-    ], string='Estado', default='draft')  # Valor por defecto: 'draft'
-    
-    # Relación One2many con las líneas de presupuesto
-    line_ids = fields.One2many('finanzas.budget.line', 'budget_id', string='Líneas de Presupuesto')
-
-    # Método para comparar el presupuesto planeado con los gastos reales
-    def action_compare_budget(self):
-        for budget in self:  # Iteramos sobre cada presupuesto
-            for line in budget.line_ids:  # Iteramos sobre cada línea de presupuesto
-                # Calculamos el monto real sumando las transacciones financieras del departamento y tipo correspondiente
-                total_real = sum(budget.env['finanzas.financial.transaction'].search([
-                    ('department_id', '=', budget.department_id.id),  # Filtramos por el mismo departamento
-                    ('type', '=', line.type),  # Filtramos por el mismo tipo (ingreso/gasto)
-                    ('date', '>=', '%s-01-01' % budget.year),  # Filtramos por año desde el 1 de enero
-                    ('date', '<=', '%s-12-31' % budget.year)  # Filtramos por año hasta el 31 de diciembre
-                ]).mapped('amount'))  # Obtenemos los montos de las transacciones y los sumamos
-                
-                line.real_amount = total_real  # Asignamos el monto real calculado a la línea de presupuesto
-
-
-# Definimos el modelo BudgetLine (Línea de Presupuesto)
-class BudgetLine(models.Model):
-    _name = 'finanzas.budget.line'  # Nombre técnico del modelo
-    _description = 'Línea de Presupuesto'  # Descripción del modelo
-    
-    # Campos del modelo
-    budget_id = fields.Many2one('finanzas.budget', string='Presupuesto', required=True, ondelete='cascade')  
-    # Relación Many2one con el presupuesto al que pertenece (si el presupuesto se elimina, se eliminan sus líneas)
-    
-    type = fields.Selection([
-        ('income', 'Ingreso'),  # Tipo ingreso
-        ('expense', 'Gasto')  # Tipo gasto
-    ], string='Tipo', required=True)  # Campo obligatorio para definir si es ingreso o gasto
-    
-    planned_amount = fields.Float(string='Monto Planeado', required=True)  # Monto planeado para esta línea
-    
-    real_amount = fields.Float(string='Monto Real', compute='_compute_real_amount', store=True)  
-    # Monto real, calculado dinámicamente con `_compute_real_amount`, se almacena en la base de datos
-
-    # Método que calcula el monto real basado en las transacciones financieras
-    @api.depends('budget_id')  # Se ejecuta cuando cambia el presupuesto asociado
-    def _compute_real_amount(self):
-        for line in self:  # Iteramos sobre cada línea de presupuesto
-            transactions = self.env['finanzas.financial.transaction'].search([
-                ('department_id', '=', line.budget_id.department_id.id),  # Filtramos por el mismo departamento
-                ('type', '=', line.type),  # Filtramos por el mismo tipo (ingreso/gasto)
-                ('date', '>=', '%s-01-01' % line.budget_id.year),  # Filtramos desde el 1 de enero del año correspondiente
-                ('date', '<=', '%s-12-31' % line.budget_id.year)  # Filtramos hasta el 31 de diciembre del mismo año
+    @api.depends('department_id', 'year')
+    def _compute_totals(self):
+        for report in self:
+            # Filtrar las líneas de presupuesto por departamento y año
+            budget_lines = self.env['finanzas.budget.line'].search([
+                ('budget_id.department_id', '=', report.department_id.id),
+                ('budget_id.year', '=', report.year)
             ])
-            line.real_amount = sum(transactions.mapped('amount'))  # Sumamos los montos de las transacciones encontradas
+            
+            # Calcular los ingresos y gastos planeados
+            report.income_total = sum(line.planned_amount for line in budget_lines if line.type == 'income')
+            report.expense_total = sum(line.planned_amount for line in budget_lines if line.type == 'expense')
+            
+            # Calcular los ingresos y gastos reales
+            report.income_real = sum(line.real_amount for line in budget_lines if line.type == 'income')
+            report.expense_real = sum(line.real_amount for line in budget_lines if line.type == 'expense')
+            
+            # Calcular el balance (planeado y real)
+            report.balance = report.income_total - report.expense_total
+            report.balance_real = report.income_real - report.expense_real
 
 
-# Definimos el modelo FinancialTransaction (Transacción Financiera Real)
-class FinancialTransaction(models.Model):
-    _name = 'finanzas.financial.transaction'  # Nombre técnico del modelo
-    _description = 'Transacción Financiera Real'  # Descripción del modelo
-    
-    # Campos del modelo
-    name = fields.Char(string='Descripción', required=True)  # Descripción de la transacción (obligatorio)
-    department_id = fields.Many2one('hr.department', string='Departamento', required=True)  # Departamento asociado a la transacción
-    
-    date = fields.Date(string='Fecha', required=True)  # Fecha de la transacción (obligatorio)
-    
-    type = fields.Selection([
-        ('income', 'Ingreso'),  # Tipo ingreso
-        ('expense', 'Gasto')  # Tipo gasto
-    ], string='Tipo', required=True)  # Campo obligatorio para definir si es ingreso o gasto
-    
-    amount = fields.Float(string='Monto', required=True)  # Monto de la transacción
 
-"""
+
+    
+
