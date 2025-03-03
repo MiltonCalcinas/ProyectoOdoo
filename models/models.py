@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api # type: ignore
-
+from odoo.exceptions import ValidationError # type: ignore
 
 
 class Budget(models.Model):
@@ -19,14 +19,24 @@ class Budget(models.Model):
 
     line_ids = fields.One2many('finanzas.budget.line', 'budget_id', string='Líneas de Presupuesto')
 
+    
     @api.onchange('name', 'department_id', 'year')
     def _onchange_update_real_amount(self):
-        """ Se ejecuta cuando se abre o cambia un presupuesto """
+        """ Se ejecuta al actualizar 'name', 'department_id', 'year' """
         for budget in self:
             for line in budget.line_ids:
                 line._compute_real_amount()
              
+    # valida la existencia de 1 ingreso y 1 gasto exactamente
+    @api.constrains('line_ids')
+    def _check_budget_lines(self):
+        """ Verifica que el presupuesto tenga exactamente 1 ingreso y 1 gasto. """
+        for budget in self:
+            incomes = budget.line_ids.filtered(lambda l: l.type == 'income')
+            expenses = budget.line_ids.filtered(lambda l: l.type == 'expense')
 
+            if len(incomes) != 1 or len(expenses) != 1:
+                raise ValidationError("Cada presupuesto debe contener exactamente un ingreso y un gasto.") # type: ignore
 
 
 class BudgetLine(models.Model):
@@ -100,6 +110,8 @@ class FinancialTransaction(models.Model):
 
 
 
+
+    
 
 """
 

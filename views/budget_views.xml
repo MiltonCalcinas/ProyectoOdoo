@@ -1,8 +1,10 @@
 <odoo>
+    <!--Definimos vista de formulario para el presupuesto (buget)-->
     <record id="view_budget_form" model="ir.ui.view">
         <field name="name">finanzas.budget.form</field>
         <field name="model">finanzas.budget</field>
         <field name="arch" type="xml">
+        <!--Estructura del formulario a rellenar en la aplicacion-->
             <form string="Presupuesto">
                 <sheet>
                     <group>
@@ -11,6 +13,7 @@
                         <field name="year"/>
                         <field name="state"/>
                     </group>
+        <!--Es la estructura de la linea de presupuesto en forma de notebook -->
                     <notebook>
                         <page string="Líneas de Presupuesto">
                             <field name="line_ids" widget="one2many_list" force_save="1">
@@ -25,8 +28,8 @@
                 </sheet>
             </form>
         </field>
-    </record>
-
+    </record> 
+    <!-- Estrutura del arbol para mostrar la lista de presupouestos-->
     <record id="view_budget_tree" model="ir.ui.view">
         <field name="name">finanzas.budget.tree</field>
         <field name="model">finanzas.budget</field>
@@ -40,15 +43,19 @@
         </field>
     </record>
 
+
+    <!--                            Menu de Navegación               -->
+
+    <!-- Menu principal: Finanzas-->
     <menuitem id="menu_finanzas_root" name="Finanzas" sequence="1"/>
-    
+    <!--  (barra de menu) Presupuesto dentro de finanzas(parent)-->
     <menuitem id="menu_budget" name="Presupuestos" parent="menu_finanzas_root" sequence="2"/>
-    
+    <!-- Accion para abrir presupuesto-->
     <record id="action_budget" model="ir.actions.act_window">
         <field name="name">Presupuestos</field>
         <field name="res_model">finanzas.budget</field>
         <field name="view_mode">tree,form</field>
     </record>
-
+    <!-- Se añade item de Prepuesto(parent). Se asocia el item a la accion (action_bugeg)-->
     <menuitem id="menu_action_budget" name="Gestión de Presupuestos" parent="menu_budget" action="action_budget"/>
 </odoo>
