@@ -1,11 +1,14 @@
 <odoo>
+    <!--Definimos vista de formulario para el presupuesto (buget)-->
     <record id="view_budget_report_form" model="ir.ui.view">
         <field name="name">finanzas.budget.report.form</field>
         <field name="model">finanzas.budget.report</field>
         <field name="arch" type="xml">
-            <form string="Reporte de Presupuesto">
+        <!--Estructura del formulario a rellenar en la aplicacion-->
+            <form string="Reporte">
                 <sheet>
                     <group>
+                        <field name="name"/>
                         <field name="department_id"/>
                         <field name="year"/>
                     </group>
@@ -18,40 +21,37 @@
                         <field name="income_real" readonly="1"/>
                         <field name="expense_real" readonly="1"/>
                         <field name="balance_real" readonly="1"/>
-                    </group>
-                    <notebook>
-                        <page string="Gráficos">
-                            <div class="oe_charts" options="{'data': {'type': 'bar', 'columns': [['Ingresos Planeados', income_total], ['Gastos Planeados', expense_total], ['Ingresos Reales', income_real], ['Gastos Reales', expense_real]]}}"/>
-                        </page>
-                    </notebook>
+                   </group> 
                 </sheet>
             </form>
+        </field>
+    </record> 
+    <!-- Estrutura del arbol para mostrar la lista de reportes-->
+    <record id="view_budget_report_tree" model="ir.ui.view">
+        <field name="name">finanzas.budget.report.tree</field>
+        <field name="model">finanzas.budget.report</field>
+        <field name="arch" type="xml">
+            <list string="Reportes">
+                <field name="name"/>
+                <field name="department_id"/>
+                <field name="year"/>
+            </list>
         </field>
     </record>
 
 
+    <!--                            Menu de Navegación               -->
 
-        <!-- Menú principal Finanzas -->
+    <!-- Menu principal: Finanzas-->
     <menuitem id="menu_finanzas_root" name="Finanzas" sequence="1"/>
-        
-        <!-- Submenu -->
-    <menuitem id="menu_financial_report" name="Reportes Financieros"
-              parent="menu_finanzas_root" sequence="2"/>
-
-
-    <!-- Acción del Reporte -->
+    <!--  (barra de menu) REPORTE dentro de finanzas(parent)-->
+    <menuitem id="menu_budget_report" name="Reporte" parent="menu_finanzas_root" sequence="2"/>
+    <!-- Accion para abrir reporte-->
     <record id="action_budget_report" model="ir.actions.act_window">
-        <field name="name">Reporte de Presupuesto</field>
+        <field name="name">Reporte</field>
         <field name="res_model">finanzas.budget.report</field>
-        <field name="view_mode">form</field>
-        <field name="view_id" ref="view_budget_report_form"/>
+        <field name="view_mode">list,form</field>
     </record>
-
-    
-    <!-- Ajuste: Crear un menú principal para "Presupuestos" y colocar el reporte en el mismo nivel -->
-    
-    <menuitem id="menu_reporte_action"
-            parent="menu_financial_report"
-            action="action_budget_report"
-            sequence="2"/>
+    <!-- Se añade item de Prepuesto(). Se asocia el item a la accion (action_bugeg)-->
+    <menuitem id="menu_action_budget_report" name="Gestión de Reporte" parent="menu_budget_report" action="action_budget_report"/>
 </odoo>

@@ -36,20 +36,4 @@
 </odoo>
 
 
-<!--
-<odoo>
-    <record id="view_financial_transaction_tree" model="ir.ui.view">
-        <field name="name">finanzas.financial.transaction.tree</field>
-        <field name="model">finanzas.financial.transaction</field>
-        <field name="arch" type="xml">
-            <tree string="Transacciones Financieras">
-                <field name="name"/>
-                <field name="department_id"/>
-                <field name="date"/>
-                <field name="type"/>
-                <field name="amount"/>
-            </tree>
-        </field>
-    </record>
-</odoo>
--->
+

@@ -117,6 +117,7 @@ class BudgetReport(models.Model):
     _name = 'finanzas.budget.report'
     _description = 'Reporte de Presupuesto y Transacciones'
 
+    name = fields.Char(string='Nombre del Reporte', required=True)
     department_id = fields.Many2one('hr.department', string='Departamento', required=True)
     year = fields.Integer(string='Año', required=True)
     income_total = fields.Float(string='Total Ingresos', compute='_compute_totals', store=True)
