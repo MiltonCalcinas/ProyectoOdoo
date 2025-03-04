@@ -7,10 +7,12 @@ class Budget(models.Model):
     _name = 'finanzas.budget'
     _description = 'Presupuesto por Departamento'
     
+    # son los campos del presupuesto Nombre , departamento y año
     name = fields.Char(string='Nombre del Presupuesto', required=True)
     department_id = fields.Many2one('hr.department', string='Departamento', required=True)
     year = fields.Integer(string='Año', required=True)
     
+    # combox para indicar el estado del presupuesto: borrardor, confirmado, finalizado
     state = fields.Selection([
         ('draft', 'Borrador'),
         ('confirmed', 'Confirmado'),
@@ -36,22 +38,27 @@ class Budget(models.Model):
             expenses = budget.line_ids.filtered(lambda l: l.type == 'expense')
 
             if len(incomes) != 1 or len(expenses) != 1:
-                raise ValidationError("Cada presupuesto debe contener exactamente un ingreso y un gasto.") # type: ignore
+                raise ValidationError("Cada presupuesto debe contener exactamente un ingreso y un gasto.") 
 
-
+# clase para la lineas de ingreso y gato  en presupuesto
 class BudgetLine(models.Model):
     _name = 'finanzas.budget.line'
     _description = 'Línea de Presupuesto'
     
+    # SOLO SE PUEDE INTRODUCIR UN GASTO Y UN PRESUPUESTO, DE LO CONTRARIO LANZA UN MENSAJE DE ERROR A USUARIO
     budget_id = fields.Many2one('finanzas.budget', string='Presupuesto', required=True, ondelete='cascade')
     type = fields.Selection([
         ('income', 'Ingreso'),
         ('expense', 'Gasto')
     ], string='Tipo', required=True)
+    
+    # monto de ingreso y gasto planeado
     planned_amount = fields.Float(string='Monto Planeado', required=True)
     
+    # mosnto de ingreso y gasto de transacciones reales (SE ACTUALIZA SEGUN SE ACTUALIZAN LAS TRANSANCIONES)
     real_amount = fields.Float(string='Monto Real', compute='_compute_real_amount', store=True)
 
+    # Busca los ingresos y gastos asociados al presupuesto (por departamento y año)
     @api.depends('budget_id', 'budget_id.department_id', 'budget_id.year', 'type')
     def _compute_real_amount(self):
         for line in self:
@@ -65,11 +72,12 @@ class BudgetLine(models.Model):
                 line.real_amount = sum(transactions.mapped('amount'))
 
 
-
+# Clase para  crear transacciones financieras
 class FinancialTransaction(models.Model):
     _name = 'finanzas.financial.transaction'
     _description = 'Transacción Financiera Real'
-
+    
+    # campos de la transaccion:  Nombre, departamento y fecha
     name = fields.Char(string='Descripción', required=True)
     department_id = fields.Many2one('hr.department', string='Departamento', required=True)
     date = fields.Date(string='Fecha', required=True)
@@ -78,7 +86,7 @@ class FinancialTransaction(models.Model):
         ('expense', 'Gasto')
     ], string='Tipo', required=True)
     amount = fields.Float(string='Monto', required=True)
-
+    #
     @api.model
     def create(self, vals):
         """ Al crear una nueva transacción, actualiza automáticamente el presupuesto correspondiente. """
@@ -116,16 +124,17 @@ class FinancialTransaction(models.Model):
 class BudgetReport(models.Model):
     _name = 'finanzas.budget.report'
     _description = 'Reporte de Presupuesto y Transacciones'
-
+    # Campo del Repote: Nombre, departamento, año
     name = fields.Char(string='Nombre del Reporte', required=True)
     department_id = fields.Many2one('hr.department', string='Departamento', required=True)
     year = fields.Integer(string='Año', required=True)
-    income_total = fields.Float(string='Total Ingresos', compute='_compute_totals', store=True)
-    expense_total = fields.Float(string='Total Gastos', compute='_compute_totals', store=True)
-    balance = fields.Float(string='Balance', compute='_compute_totals', store=True)
+    # campos caculados automaticamente: Ingreso y gasto presupuestado, ingreso y gasto real, y benefcios
+    income_total = fields.Float(string='Ingresos Presupuestado', compute='_compute_totals', store=True)
+    expense_total = fields.Float(string='Gastos Presupuestado', compute='_compute_totals', store=True)
+    balance = fields.Float(string='Resultado Presupuestado', compute='_compute_totals', store=True)
     income_real = fields.Float(string='Ingresos Reales', compute='_compute_totals', store=True)
     expense_real = fields.Float(string='Gastos Reales', compute='_compute_totals', store=True)
-    balance_real = fields.Float(string='Balance Real', compute='_compute_totals', store=True)
+    balance_real = fields.Float(string='Resultado Real', compute='_compute_totals', store=True)
 
     @api.depends('department_id', 'year')
     def _compute_totals(self):

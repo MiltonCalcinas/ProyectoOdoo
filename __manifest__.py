@@ -5,9 +5,8 @@
     'summary': "Módulo para gestionar las finanzas de la empresa.",
 
     'description': """
-    Este módulo permite a las empresas gestionar sus finanzas de manera eficiente, incluyendo la contabilidad, 
-    gestión de presupuestos, y control de flujos de efectivo. Proporciona herramientas para crear informes financieros, 
-    gestionar transacciones bancarias, y realizar análisis de gastos e ingresos.
+    Este módulo permite a las empresas gestionar sus finanzas de manera eficiente, incluyendo la
+    gestión de presupuestos, control de transacciones y generacion de reportes. 
     """,
 
     'author': "Milton y Talía",
@@ -33,9 +32,9 @@
 
     'data': [
         'security/ir.model.access.csv',  # Se asegura que la seguridad esté cargada
-        'views/budget_views.xml',  # Nueva vista para el modelo Budget
-        'views/budget_report_views.xml', # Graficos y tablas
-        'views/budget_line_views.xml',  # Nueva vista para BudgetLine
+        'views/budget_views.xml',  # Nueva vista para el presupuesto
+        'views/budget_report_views.xml', # reporte
+        'views/budget_line_views.xml',  # Nueva vista para lineas gasto/ingreso en presupuesto
         'views/financial_transaction_views.xml',  # Nueva vista para transacciones financieras
          'views/financial_transaction_menu.xml', # 
     ],

@@ -1,4 +1,5 @@
 <odoo>
+    <!-- VISTA PARA LAS LINEAS DE PRESUPUESTO INGRESO/GASTO PRESUPUESTADO/REAL-->
     <record id="view_budget_line_tree" model="ir.ui.view">
         <field name="name">finanzas.budget.line.tree</field>
         <field name="model">finanzas.budget.line</field>
