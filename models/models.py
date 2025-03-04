@@ -77,7 +77,7 @@ class FinancialTransaction(models.Model):
     _name = 'finanzas.financial.transaction'
     _description = 'Transacción Financiera Real'
     
-    # campos de la transaccion:  Nombre, departamento y fecha
+    # campos de la transaccion:  Descripcion, departamento y fecha
     name = fields.Char(string='Descripción', required=True)
     department_id = fields.Many2one('hr.department', string='Departamento', required=True)
     date = fields.Date(string='Fecha', required=True)
@@ -116,11 +116,6 @@ class FinancialTransaction(models.Model):
             budget_lines._compute_real_amount()
 
 
-
-# store= True , en un campo calculado, el valor se guarda despues de ser calculado
-# @api.depends('department_id','years') siginfica que el meétodo que esté debajo se ejecuta automáticamente cuando
-# se modifica cualquiera de los dos campos indicados.
-# self.env  propociona acceso al entorno de odoo como registro de otros modelos y recusos del sistema
 class BudgetReport(models.Model):
     _name = 'finanzas.budget.report'
     _description = 'Reporte de Presupuesto y Transacciones'

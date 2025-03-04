@@ -19,17 +19,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    #'depends': ['base'],
     'depends': ['base', 'hr'],
-
-
-    # always loaded
-    #'data': [
-    #    'security/ir.model.access.csv',
-    #    'views/views.xml',
-    #    'views/templates.xml',
-    #],
-
     'data': [
         'security/ir.model.access.csv',  # Se asegura que la seguridad esté cargada
         'views/budget_views.xml',  # Nueva vista para el presupuesto
